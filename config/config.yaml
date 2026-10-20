@@ -1,0 +1,138 @@
+# Configuración Global de la Fábrica de Reels
+llm:
+  preferred_provider: "gemini"   # gemini | custom | openai | groq | auto (se usa el primero con clave válida)
+
+video:
+  width: 1080
+  height: 1920
+  fps: 30
+  aspect_ratio: "9:16"
+  target_duration_seconds: 30 # Duración aproximada objetivo por reel
+  max_scenes: 60              # Máximo de planos visuales por video
+  transition_duration: 0.5    # Segundos de transición
+  encoder: "auto"             # auto (GPU NVIDIA/Intel/AMD si existe) | libx264 | h264_nvenc | h264_qsv | h264_amf
+
+voice:
+  provider: "edge-tts"        # "edge-tts", "openai", "elevenlabs"
+  default_voice: "es-MX-JorgeNeural"
+  default_voice_en: "en-US-ChristopherNeural"
+  engine: "gemini"            # gemini (voz natural, requiere GEMINI_API_KEY) | edge (gratis, sin límites)
+  gemini_voices:              # Tono por nicho: Gemini lee en voz alta cualquier indicación, así que el tono sale de la voz
+    default: "Charon"
+    curiosidades: "Puck"
+    psicologia_oscura: "Algenib"
+    finanzas: "Kore"
+    motivacion: "Fenrir"
+    misterio: "Enceladus"
+    ciencia: "Charon"
+    historia_oculta: "Sadaltager"
+    tecnologia_ia: "Iapetus"
+    salud_biohacking: "Achird"
+    documental_history: "Gacrux"
+    anime_manga: "Laomedeia"
+  voices_available:
+    - id: "es-MX-JorgeNeural"
+      name: "Jorge (México - Dinámico / Narración)"
+      gender: "Male"
+    - id: "es-MX-DaliaNeural"
+      name: "Dalia (México - Expresiva)"
+      gender: "Female"
+    - id: "es-ES-AlvaroNeural"
+      name: "Álvaro (España - Enérgico / Podcast)"
+      gender: "Male"
+    - id: "es-ES-ElviraNeural"
+      name: "Elvira (España - Clara / Documental)"
+      gender: "Female"
+    - id: "es-CO-GonzaloNeural"
+      name: "Gonzalo (Colombia - Cercano / Casual)"
+      gender: "Male"
+    - id: "es-CO-SalomeNeural"
+      name: "Salomé (Colombia - Suave)"
+      gender: "Female"
+    - id: "es-AR-TomasNeural"
+      name: "Tomás (Argentina - Convincente)"
+      gender: "Male"
+    - id: "en-US-ChristopherNeural"
+      name: "Christopher (EEUU - Inglés Profundo)"
+      gender: "Male"
+    - id: "en-US-JennyNeural"
+      name: "Jenny (EEUU - Inglés Enérgico)"
+      gender: "Female"
+  rate: "+5%"                 # Velocidad de voz (+5% para mayor dinamismo)
+  pitch: "+0Hz"
+
+subtitles:
+  font_name: "Montserrat Black"   # nombre de familia completo: libass no reconoce "Montserrat-Black" (assets/fonts)
+  fallback_font: "Arial"
+  font_size: 72
+  margin_v: 400               # Margen inferior (zona segura de TikTok / Reels)
+  words_per_line: 3           # Cantidad de palabras mostradas a la vez
+  active_color: "&H0020FFFF&" # Amarillo brillante BGR en ASS (&H00BBGGRR&)
+  inactive_color: "&H00FFFFFF&" # Blanco
+  outline_color: "&H00000000&"  # Borde negro grueso
+  outline_width: 5
+  shadow_width: 2
+  uppercase: true             # Subtítulos en MAYÚSCULAS virales
+
+media:
+  default_provider: "pollinations" # "pollinations", "pexels", "local_backgrounds"
+  image_model: "flux"              # "flux", "turbo", "standard"
+  ken_burns_zoom_rate: 0.08        # Tasa de zoom cinematográfico (8% de zoom)
+
+audio:
+  background_music: false        # false: exportar sin música para añadir un sonido en tendencia en TikTok/Instagram
+  sfx: "minimal"                 # off | minimal (impacto en el gancho + whoosh en cambios de escena) | full
+  speech_volume: 1.0
+  music_volume: 0.12               # Volumen de música de fondo (12%)
+  ducking_speech_active: 0.04      # Reducir música al 4% cuando habla el locutor
+  fade_in_seconds: 1.0
+  fade_out_seconds: 2.0
+
+production:
+  profile: "balanced_fast"
+  short_visual_seconds: 4.0
+  long_visual_seconds: 8.0
+  min_visual_seconds: 2.5
+  max_visual_beats: 60
+  provider_retries: 3
+  network_concurrency: 2          # Descargas simultáneas de imágenes/clips por video
+  render_workers: 2               # Clips de escena codificados en paralelo por video
+  render_profile: "balanced"      # draft | balanced | quality (preset/CRF del MP4 final)
+  keep_intermediates: false       # true = conservar imágenes y clips de stock tras terminar
+  failure_policy: "resilient"
+
+# Perfiles de plataforma: fijan la duración por defecto y las pautas del guion.
+platforms:
+  tiktok:            # Programa de Creadores de TikTok: solo paga videos de más de 1 minuto
+    min_duration: 65
+    max_duration: 90
+    default_duration: 72
+  reels:             # Instagram / Facebook Reels
+    min_duration: 30
+    max_duration: 60
+    default_duration: 45
+
+# Investigación previa (documentales cortos): activada por defecto en estos nichos.
+research:
+  default_niches: ["documental_history", "historia_oculta", "misterio", "ciencia"]
+
+# Publicación: al terminar cada video se sube solo a las cuentas conectadas en Ajustes.
+# No se publica solo un video con guion genérico (IA caída) ni con imágenes de respaldo.
+publishing:
+  auto: true
+  platforms: ["instagram", "facebook", "youtube"]
+  youtube_privacy: "public"       # public | unlisted | private
+
+# Posts de imagen: estilo del texto por nicho (editorial | cajas) y firma en cada imagen.
+posts:
+  handle: "@sombra_de_evidencia"
+  styles:
+    default: "editorial"
+    curiosidades: "editorial"
+    misterio: "cajas"
+
+# Texto en pantalla que retiene: título-gancho (0-2.6 s), palabras clave grandes y barra de progreso.
+overlays:
+  title_card: true
+  keyword_pops: true
+  progress_bar: true

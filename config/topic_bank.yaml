@@ -1,0 +1,245 @@
+# Banco de temas concretos por nicho. Se usa en el modo "aleatorio" cuando no hay IA disponible
+# (con IA, Gemini propone temas nuevos y este banco queda de respaldo). Edítalo libremente:
+# un tema por línea, específico y verificable. Los temas ya usados se recuerdan en output/topic_history.json.
+
+curiosidades:
+  - Por qué los pulpos tienen tres corazones y sangre azul
+  - Por qué el cielo es azul y los atardeceres rojos
+  - Cómo duermen los delfines sin ahogarse
+  - Por qué los flamencos son rosados
+  - El animal que puede sobrevivir en el espacio exterior: el tardígrado
+  - Por qué los gatos siempre caen de pie
+  - Cómo las abejas eligen un nuevo hogar votando
+  - Por qué no existen colores como el azul en casi ningún animal
+  - Qué pasa en tu cuerpo cuando bostezas
+  - Por qué la miel nunca se echa a perder
+  - Cómo navegan las tortugas marinas miles de kilómetros
+  - Por qué los plátanos son ligeramente radiactivos
+  - El árbol más antiguo del mundo tiene casi 5.000 años
+  - Por qué las cebras tienen rayas
+  - Cómo los camaleones cambian de color de verdad
+  - Por qué los aviones no vuelan en línea recta sobre el mapa
+  - La ciudad que se hunde varios centímetros cada año: Yakarta
+  - Por qué el agua caliente puede congelarse antes que la fría
+  - Cómo se forman los diamantes
+  - Por qué los koalas duermen hasta 20 horas al día
+
+psicologia_oscura:
+  - El efecto Dunning-Kruger explicado con ejemplos reales
+  - Qué es el gaslighting y cómo reconocerlo
+  - El experimento de la cárcel de Stanford y sus críticas
+  - El experimento de obediencia de Milgram
+  - El efecto de anclaje en los precios de las tiendas
+  - Qué es la triada oscura de la personalidad
+  - El sesgo de confirmación en redes sociales
+  - Cómo funciona el "foot in the door" en ventas
+  - El efecto espectador y el caso Kitty Genovese
+  - Por qué recordamos más lo negativo que lo positivo
+  - El love bombing en relaciones tóxicas
+  - El efecto halo: por qué juzgamos por la apariencia
+  - La disonancia cognitiva explicada
+  - Técnicas de escasez que usan las tiendas online
+  - El síndrome de Estocolmo y su origen
+  - Cómo los casinos diseñan sus salas para que no salgas
+  - El efecto Barnum y los horóscopos
+  - La indefensión aprendida del experimento de Seligman
+  - Microexpresiones: lo que revela la cara en medio segundo
+  - El sesgo del costo hundido
+
+finanzas:
+  - Cómo funciona el interés compuesto con un ejemplo de 10 años
+  - La regla 50/30/20 para organizar tu sueldo
+  - Qué es la inflación y por qué tus ahorros pierden valor
+  - Qué es un fondo indexado y por qué lo recomiendan
+  - La diferencia entre un activo y un pasivo
+  - Cómo funciona una tarjeta de crédito y sus intereses
+  - Qué es un fondo de emergencia y cuánto necesitas
+  - La burbuja de los tulipanes de 1637
+  - Cómo se hizo millonario Warren Buffett con el interés compuesto
+  - Qué pasó en la crisis financiera de 2008
+  - La regla del 72 para saber cuándo se duplica tu dinero
+  - Qué es el costo de oportunidad
+  - Cómo funciona la bolsa de valores en un minuto
+  - Por qué los bancos centrales suben las tasas de interés
+  - El efecto latte: cuánto cuestan los gastos pequeños en un año
+  - Qué es la diversificación de inversiones
+  - Cómo funciona un crédito hipotecario
+  - La hiperinflación de Venezuela explicada
+  - Qué es el ingreso pasivo y qué no lo es
+  - Cómo funciona el dropshipping y sus riesgos
+
+motivacion:
+  - La historia de rechazo de J. K. Rowling antes de Harry Potter
+  - Qué enseñaba Marco Aurelio sobre el control
+  - La regla de los 2 minutos para vencer la procrastinación
+  - Cómo Thomas Edison veía sus miles de intentos fallidos
+  - La dicotomía del control de Epicteto
+  - El método Pomodoro y por qué funciona
+  - La historia de Kentucky Fried Chicken y el coronel Sanders
+  - Qué es la mentalidad de crecimiento según Carol Dweck
+  - La regla del 1 % de mejora diaria
+  - Cómo Séneca pensaba sobre el tiempo
+  - La historia de Michael Jordan y su expulsión del equipo escolar
+  - Por qué la disciplina supera a la motivación
+  - El experimento del malvavisco y la gratificación diferida
+  - Los hábitos atómicos: cómo se forma un hábito
+  - La historia de Nick Vujicic
+  - Memento mori: la práctica estoica de recordar la muerte
+  - La técnica de los 5 porqués para resolver problemas
+  - Cómo Walt Disney fue despedido por falta de imaginación
+  - Qué es el estado de flujo según Csikszentmihalyi
+  - La historia del primer ascenso al Everest
+
+misterio:
+  - El paso Diatlov: qué les pasó a los nueve excursionistas
+  - La desaparición del vuelo MH370
+  - El manuscrito Voynich: el libro que nadie puede leer
+  - La colonia perdida de Roanoke
+  - El barco Mary Celeste encontrado sin tripulación
+  - La señal Wow! de 1977
+  - El caso del hombre de Somerton
+  - El triángulo de las Bermudas: qué dicen los datos
+  - La desaparición de Amelia Earhart
+  - El asesino del Zodiaco y sus cifrados
+  - Las luces de Hessdalen en Noruega
+  - El mecanismo de Anticitera
+  - La isla de las muñecas en Xochimilco
+  - El caso de Elisa Lam en el hotel Cecil
+  - Las piedras de Ica y la verdad detrás
+  - El faro de las islas Flannan y sus tres guardianes
+  - La misteriosa muerte de Edgar Allan Poe
+  - El caso del vuelo 19 de 1945
+  - Las líneas de Nazca y sus teorías
+  - El tesoro perdido de los templarios
+
+ciencia:
+  - Qué es un agujero negro y cómo se fotografió el primero
+  - Por qué el tiempo pasa más lento cerca de la gravedad
+  - Qué es la materia oscura
+  - Cómo funciona la vacuna de ARN mensajero
+  - Qué pasaría si la Luna desapareciera
+  - Cómo se formó el sistema solar
+  - Qué es el entrelazamiento cuántico
+  - Por qué Plutón dejó de ser planeta
+  - Qué es CRISPR y cómo edita el ADN
+  - La paradoja de Fermi: dónde están todos
+  - Cómo funciona la fusión nuclear del Sol
+  - El telescopio James Webb y lo que ha descubierto
+  - Qué es la entropía explicado fácil
+  - Por qué los volcanes de Islandia son tan activos
+  - Cómo se mide la edad del universo
+  - Qué es una estrella de neutrones
+  - Por qué el océano es salado
+  - La paradoja de los gemelos de Einstein
+  - Cómo funciona la fotosíntesis
+  - Qué son las ondas gravitacionales
+
+historia_oculta:
+  - Cómo se construyeron realmente las pirámides de Giza
+  - La biblioteca de Alejandría: qué se perdió de verdad
+  - La caída de Constantinopla en 1453
+  - El fuego griego: el arma secreta de Bizancio
+  - La tumba de Tutankamón y la supuesta maldición
+  - Göbekli Tepe: el templo más antiguo del mundo
+  - La peste negra y cómo cambió Europa
+  - El imperio de Mansa Musa, el hombre más rico de la historia
+  - Los guerreros de terracota de Xi'an
+  - La ciudad de Petra y su sistema de agua
+  - Cleopatra vivió más cerca del iPhone que de las pirámides
+  - El Imperio inca y sus caminos de 40.000 km
+  - La Gran Muralla china: mitos y datos
+  - El naufragio del Vasa en 1628
+  - El hundimiento del Titanic: los errores clave
+  - La tecnología del hormigón romano
+  - Los vikingos llegaron a América antes que Colón
+  - El código de Hammurabi
+  - La destrucción de Pompeya en el año 79
+  - Tenochtitlan: la ciudad sobre un lago
+
+tecnologia_ia:
+  - Cómo funciona ChatGPT explicado sin tecnicismos
+  - Qué son las alucinaciones de la inteligencia artificial
+  - Cómo aprende una red neuronal
+  - Los deepfakes y cómo detectarlos
+  - Qué es la computación cuántica
+  - Cómo funcionan los coches autónomos
+  - La historia de Deep Blue contra Kasparov
+  - AlphaFold y el problema del plegamiento de proteínas
+  - Qué es el test de Turing
+  - Cómo funcionan los algoritmos de recomendación de TikTok
+  - Qué es un chip y por qué hay escasez
+  - Cómo funciona el reconocimiento facial
+  - Qué es la ley de Moore y si sigue vigente
+  - Cómo se entrena un modelo de lenguaje
+  - Qué empleos está cambiando la IA
+  - Cómo funciona internet por cables submarinos
+  - Qué es el blockchain en un minuto
+  - Los robots de Boston Dynamics
+  - Qué es la IA generativa de imágenes
+  - Cómo protege tu contraseña el cifrado
+
+salud_biohacking:
+  - Qué le pasa a tu cuerpo cuando no duermes
+  - Cómo funciona el ayuno intermitente según la evidencia
+  - Por qué la luz azul afecta tu sueño
+  - Qué es el ritmo circadiano
+  - Cuánta agua necesitas realmente al día
+  - Qué pasa en tu cuerpo al caminar 30 minutos
+  - Por qué la cafeína te quita el sueño
+  - La microbiota intestinal y el estado de ánimo
+  - Qué son las zonas azules donde la gente vive más
+  - Los baños de agua fría: qué dice la ciencia
+  - Cómo funciona la memoria muscular
+  - Por qué el azúcar genera antojos
+  - Qué es la creatina y para qué sirve
+  - Cómo afecta el estrés crónico al cuerpo
+  - Por qué estirar no previene todas las lesiones
+  - La siesta ideal: cuántos minutos
+  - Qué es el VO2 máx y por qué predice longevidad
+  - Cómo el ejercicio cambia el cerebro
+  - Qué pasa al dejar el alcohol un mes
+  - Por qué la postura importa menos de lo que crees
+
+documental_history:
+  - La construcción del canal de Panamá
+  - El desastre de Chernóbil hora por hora
+  - La carrera espacial y el Apolo 11
+  - El hundimiento del Lusitania
+  - La expedición de Shackleton en la Antártida
+  - El descubrimiento de la tumba de Tutankamón por Howard Carter
+  - La caída del muro de Berlín
+  - El proyecto Manhattan
+  - La fiebre del oro de California
+  - La construcción de Machu Picchu
+  - El terremoto de Lisboa de 1755
+  - El descubrimiento de la penicilina
+  - La expedición de Lewis y Clark
+  - El Hindenburg y el fin de los zepelines
+  - La batalla de las Termópilas
+  - La ruta de la seda
+  - El imperio mongol de Gengis Kan
+  - El rescate de los 33 mineros de Chile
+  - La expedición Franklin perdida en el Ártico
+  - La erupción del Krakatoa en 1883
+
+anime_manga:
+  - Cómo nació el manga moderno con Osamu Tezuka
+  - Por qué los ojos grandes en el anime
+  - La historia del Studio Ghibli
+  - Cómo se produce un episodio de anime
+  - Por qué los animadores de anime ganan tan poco
+  - La historia de Dragon Ball y Akira Toriyama
+  - Cómo Pokémon se convirtió en la franquicia más rentable
+  - Qué significa shonen, seinen y shojo
+  - La historia de Akira y su influencia en el cine
+  - Cómo funciona la revista Shonen Jump
+  - Por qué los mangas se leen de derecha a izquierda
+  - El origen de los mechas: de Mazinger a Gundam
+  - La historia de Hayao Miyazaki
+  - Cómo llegó el anime a Latinoamérica
+  - Qué son los isekai y por qué hay tantos
+  - La historia de Sailor Moon
+  - Cómo se crea un manga semanal
+  - El fenómeno de One Piece en ventas
+  - Por qué el anime usa tantos fotogramas repetidos
+  - La historia de Neon Genesis Evangelion

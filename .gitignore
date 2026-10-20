@@ -1,0 +1,12 @@
+# Claves y tokens: en la nube van como secretos de GitHub, nunca en el repositorio.
+.env
+config/youtube_token.json
+config/youtube_client_secret.json
+
+output/
+_backup_*/
+__pycache__/
+.pytest_cache/
+tools/realesrgan/
+output.txt
+generated_output.txt

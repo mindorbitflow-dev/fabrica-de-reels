@@ -1,0 +1,150 @@
+curiosidades:
+  name: 🧠 Curiosidades & Hechos Asombrosos
+  description: Datos impactantes que detienen el scroll en los primeros 2 segundos.
+  tone: Enérgico, intrigante, con preguntas abiertas y ritmo rápido.
+  visual_style: ultra-photorealistic 8k, cinematic dramatic lighting, macro perspective,
+    vivid contrasting colors, vertical 9:16 composition, Unreal Engine 5 render style
+  recommended_voice: es-MX-JorgeNeural
+  suggested_music: energetic_beat
+  keywords:
+  - sabías que
+  - increíble
+  - secreto
+  - descubrimiento
+psicologia_oscura:
+  name: 👁️ Psicología Oscura & Mente Humana
+  description: Trucos mentales, lenguaje corporal y secretos de persuasión.
+  tone: Misterioso, persuasivo, revelador, con tono confidencial.
+  visual_style: dark moody cinematic atmosphere, noir lighting, chiaroscuro shadows,
+    high contrast neon accents, vertical 9:16 wallpaper, photorealistic 8k
+  recommended_voice: es-ES-AlvaroNeural
+  suggested_music: dark_ambient
+  keywords:
+  - psicología
+  - truco mental
+  - manipulación
+  - lenguaje corporal
+finanzas:
+  name: 💰 Finanzas, Riqueza & Negocios
+  description: Hábitos de dinero, inversiones, interés compuesto y mentalidad de éxito.
+  tone: Autoritario, inspirador, práctico y directo al grano.
+  visual_style: sleek luxury aesthetic, golden hour cinematic glow, modern high-tech
+    fintech charts, dark marble and gold reflections, vertical 9:16, masterpiece
+  recommended_voice: es-MX-JorgeNeural
+  suggested_music: modern_synth
+  keywords:
+  - dinero
+  - inversión
+  - riqueza
+  - hábitos
+motivacion:
+  name: 🏛️ Motivación & Filosofía Estoica
+  description: Disciplina, superación personal y sabiduría de Marco Aurelio y Séneca.
+  tone: Profundo, inspirador, reflexivo y de máxima fuerza mental.
+  visual_style: heroic cinematic lighting, ancient marble statues of stoic philosophers,
+    dramatic sunrise over mountain peak, film grain texture, vertical 9:16
+  recommended_voice: es-AR-TomasNeural
+  suggested_music: epic_orchestral
+  keywords:
+  - disciplina
+  - fuerza mental
+  - estoicismo
+  - superación
+misterio:
+  name: 👻 Misterio & Terror Psicológico
+  description: Enigmas sin resolver, desapariciones, conspiraciones y leyendas oscuras.
+  tone: Suspenso creciente, tono sombrío, pausas estratégicas y giros inesperados.
+  visual_style: eerie cinematic horror atmosphere, heavy fog and dim volumetric lighting,
+    VHS film grain, unsettling cinematic angle, vertical 9:16
+  recommended_voice: es-CO-GonzaloNeural
+  suggested_music: creepy_ambient
+  keywords:
+  - misterio
+  - inexplicable
+  - terror
+  - desaparición
+ciencia:
+  name: 🌌 Ciencia, Cosmos & Paradojas
+  description: Agujeros negros, física cuántica, viajes en el tiempo y el fin del
+    universo.
+  tone: Fascinante, científico pero accesible, de asombro cósmico.
+  visual_style: jaw-dropping cosmic nebula, glowing event horizon of supermassive
+    black hole, quantum particles in deep space, hyper-detailed 8k, vertical 9:16
+  recommended_voice: es-ES-ElviraNeural
+  suggested_music: space_ambient
+  keywords:
+  - universo
+  - física
+  - agujero negro
+  - paradoja
+historia_oculta:
+  name: 📜 Historia Oculta & Civilizaciones
+  description: Secretos de Egipto, Roma, pirámides, artefactos y batallas olvidadas.
+  tone: Documental épico, revelador, desmintiendo mitos históricos.
+  visual_style: ancient epic civilization cinematography, golden torches inside Egyptian
+    tomb, photorealistic historical artifact, vertical 9:16, 8k
+  recommended_voice: es-ES-AlvaroNeural
+  suggested_music: historical_epic
+  keywords:
+  - historia
+  - pirámides
+  - antiguo
+  - secreto
+tecnologia_ia:
+  name: 🤖 Inteligencia Artificial & Futuro
+  description: Avances de IA, robótica, cibernética y el impacto en la humanidad.
+  tone: Futurista, disruptivo, de alta expectativa y tecnología de punta.
+  visual_style: cyberpunk futuristic Tokyo aesthetic, glowing holographic UI, humanoid
+    robot with glowing neural networks, vertical 9:16, 8k render
+  recommended_voice: es-MX-DaliaNeural
+  suggested_music: cyberpunk_synth
+  keywords:
+  - IA
+  - futuro
+  - tecnología
+  - robots
+salud_biohacking:
+  name: 🏋️ Salud, Biohacking & Longevidad
+  description: Optimización del sueño, nutrición celular, ayuno y energía diaria.
+  tone: Práctico, basado en ciencia, transformador y motivante.
+  visual_style: clean modern biohacking aesthetic, bright natural cinematic sunlight,
+    DNA double helix digital visualization, vertical 9:16
+  recommended_voice: es-CO-SalomeNeural
+  suggested_music: chill_lofi
+  keywords:
+  - salud
+  - energía
+  - sueño
+  - longevidad
+documental_history:
+  name: 🏺 Documental History Channel (Enigmas & Archivos Prohibidos)
+  description: 'Investigaciones cinematográficas estilo History Channel: misterios
+    arqueológicos, tecnologías ancestrales, archivos desclasificados y conspiraciones
+    históricas.'
+  tone: Solemne, profundo, dramático y de máxima intriga investigativa. Usa el clásico
+    cuestionamiento del narrador de cable ('¿Y si la historia oficial estuviera equivocada?
+    ¿Qué evidencia se ocultó realmente?'), pausas estratégicas de suspenso y datos
+    documentados.
+  visual_style: cinematic History Channel documentary footage, ancient monolithic
+    temples under stormy sky, golden volumetric god rays piercing dusty archaeological
+    excavation, aged parchment maps with glowing coordinates, 35mm film texture, slow
+    dramatic 3D drone sweep over ancient ruins, photorealistic 8k, IMAX documentary
+    quality
+  recommended_voice: es-ES-AlvaroNeural
+  suggested_music: historical_epic
+  keywords:
+  - documental
+  - arqueología
+  - historia oculta
+  - archivos desclasificados
+  - civilizaciones perdidas
+  - enigma
+anime_manga:
+  name: ⚔️ Anime & Manga Shonen
+  description: Misterios, teorías y momentos épicos del anime.
+  tone: Épico, hiper-enérgico, con pausas de gran emoción.
+  visual_style: dynamic anime cinematic art, Makoto Shinkai aesthetic, dramatic lighting,
+    vivid colors, vertical 9:16 wallpaper, 8k render
+  recommended_voice: es-MX-JorgeNeural
+  keywords:
+  - anime_manga
