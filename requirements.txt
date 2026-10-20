@@ -11,3 +11,5 @@ numpy>=1.26.0
 google-api-python-client>=2.130.0
 google-auth-oauthlib>=1.2.0
 faster-whisper>=1.0.0
+# av 19 quitó av.open(metadata_errors=...), que faster-whisper usa para leer el audio.
+av<19
