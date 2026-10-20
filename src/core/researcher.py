@@ -22,6 +22,9 @@ from src.core.job_manager import write_json_atomic
 WIKI_HEADERS = {"User-Agent": "AIReelFactory/2.0 (investigación de guiones; uso personal)"}
 WIKI_TIMEOUT = 20
 MAX_EXTRACT_CHARS = 12000
+# Con menos hechos el dossier no sirve para juzgar el guion: todo parece "no respaldado" y el
+# verificador reescribiría cada escena con el mismo dato (pasó con Cicada 3301 y un solo hecho).
+MIN_FACTS_TO_VERIFY = 4
 
 
 @dataclass
@@ -235,12 +238,13 @@ class Researcher:
     def verify_script(self, scenes: List[Any], dossier: Dossier) -> Tuple[List[str], List[Dict[str, str]]]:
         """Devuelve (textos corregidos por escena, correcciones). Sin LLM, no cambia nada."""
         texts = [s.text for s in scenes]
-        if not dossier.facts or not self.llm.has_any:
+        if len(dossier.facts) < MIN_FACTS_TO_VERIFY or not self.llm.has_any:
             return texts, []
         prompt = (
             "Compara cada escena del guion con el dossier de hechos. Si una escena afirma algo que el dossier no "
             "respalda (fechas, cifras, nombres o afirmaciones), reescríbela usando solo hechos del dossier, con una "
-            "longitud parecida y el mismo tono. Si está respaldada, déjala igual.\n\n"
+            "longitud parecida y el mismo tono. Si está respaldada, déjala igual. Cada escena debe contar algo "
+            "distinto: nunca repitas en una escena lo que ya dice otra.\n\n"
             f"DOSSIER:\n{dossier.brief()}\n\nESCENAS:\n"
             + "\n".join(f"{i + 1}. {t}" for i, t in enumerate(texts))
             + '\n\nResponde solo JSON: {"scenes": [{"index": 1, "supported": true, "text": "texto final", "reason": ""}]}'
@@ -257,7 +261,10 @@ class Researcher:
             except (TypeError, ValueError):
                 continue
             new_text = str(item.get("text", "")).strip()
-            if 0 <= index < len(texts) and not item.get("supported", True) and new_text and new_text != texts[index]:
+            # Una reescritura que copia otra escena dejaría el guion repitiendo la misma frase.
+            if new_text in texts:
+                continue
+            if 0 <= index < len(texts) and not item.get("supported", True) and new_text:
                 corrections.append({"scene": index + 1, "before": texts[index], "after": new_text, "reason": str(item.get("reason", ""))})
                 texts[index] = new_text
         return texts, corrections

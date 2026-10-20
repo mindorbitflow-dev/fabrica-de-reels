@@ -131,7 +131,7 @@ class ResearcherTests(unittest.TestCase):
         self.assertEqual(dossier.source_list(), ["Caída de Constantinopla — https://es.wikipedia.org/wiki/Caida"])
 
     def test_verification_rewrites_unsupported_scenes(self):
-        dossier = Dossier("t", "es", [Fact("Cayó en 1453.", "W", "https://w")])
+        dossier = Dossier("t", "es", [Fact(f"Hecho {i}.", "W", "https://w") for i in range(4)])
         reply = json.dumps({"scenes": [
             {"index": 1, "supported": True, "text": "Cayó en 1453."},
             {"index": 2, "supported": False, "text": "El asedio duró 53 días.", "reason": "cifra inventada"},
@@ -141,6 +141,22 @@ class ResearcherTests(unittest.TestCase):
         texts, corrections = researcher.verify_script(scenes, dossier)
         self.assertEqual(texts, ["Cayó en 1453.", "El asedio duró 53 días."])
         self.assertEqual(corrections[0]["scene"], 2)
+
+    def test_verification_never_repeats_a_scene(self):
+        dossier = Dossier("t", "es", [Fact(f"Hecho {i}.", "W", "https://w") for i in range(4)])
+        same = "Contiene 73 páginas, de las cuales sólo 17 han sido descifradas."
+        reply = json.dumps({"scenes": [{"index": i, "supported": False, "text": same} for i in (1, 2, 3)]})
+        researcher = Researcher(_FakeLLM(reply=reply), cache_dir=tempfile.mkdtemp(), session=_FakeWiki())
+        scenes = [Scene(i, f"Escena original {i}.", "", []) for i in (1, 2, 3)]
+        texts, _ = researcher.verify_script(scenes, dossier)
+        self.assertEqual(texts, [same, "Escena original 2.", "Escena original 3."])
+
+    def test_thin_dossier_does_not_rewrite_the_script(self):
+        dossier = Dossier("t", "es", [Fact("Contiene 73 páginas.", "W", "https://w")])
+        reply = json.dumps({"scenes": [{"index": 1, "supported": False, "text": "Contiene 73 páginas."}]})
+        researcher = Researcher(_FakeLLM(reply=reply), cache_dir=tempfile.mkdtemp(), session=_FakeWiki())
+        texts, corrections = researcher.verify_script([Scene(1, "Liber Primus.", "", [])], dossier)
+        self.assertEqual((texts, corrections), (["Liber Primus."], []))
 
     def test_brief_is_injected_into_director_prompt(self):
         from src.core.director_skills import build_director_prompt
