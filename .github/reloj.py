@@ -13,9 +13,11 @@ REELS = [(12, "misterio"), (15, "curiosidades"), (18, "curiosidades"), (21, "mis
 YOUTUBE_HOURS = {18, 0}
 POST_HOURS = [0, 1, 2, 12, 13, 14, 16, 17, 18, 20, 21, 22]
 MYSTERY_POST_HOURS = {12, 14, 17, 20, 22, 1}
+NEWS_HOURS = POST_HOURS   # página de noticias, a los :52 para no coincidir con los posts
 
 SLOTS = [(h, 7, "reel", niche, "instagram,facebook" + (",youtube" if h in YOUTUBE_HOURS else "")) for h, niche in REELS]
 SLOTS += [(h, 37, "post", "misterio" if h in MYSTERY_POST_HOURS else "curiosidades", "instagram,facebook") for h in POST_HOURS]
+SLOTS += [(h, 52, "noticia", "curiosidades", "facebook") for h in NEWS_HOURS]   # el nicho no se usa en noticias
 
 RUN_SECONDS = 5 * 3600        # el trabajo tiene un límite de 6 h
 HANDOFF_MARGIN = 10 * 60      # no ceder el turno si una franja está a menos de esto

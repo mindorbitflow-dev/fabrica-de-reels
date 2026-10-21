@@ -148,3 +148,14 @@ anime_manga:
   recommended_voice: es-MX-JorgeNeural
   keywords:
   - anime_manga
+noticias:
+  name: 📰 Noticias de Colombia
+  description: Lo más reciente de Colombia contado en una imagen y un texto corto, con su fuente.
+  tone: Informativo, neutral y claro, sin sensacionalismo ni opinión; titulares fieles al hecho.
+  visual_style: documentary news photograph, natural light, realistic
+  recommended_voice: es-CO-GonzaloNeural
+  suggested_music: none
+  keywords:
+  - noticias
+  - colombia
+  - actualidad

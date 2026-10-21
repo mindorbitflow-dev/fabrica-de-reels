@@ -40,7 +40,8 @@ from src.core.niche_manager import NicheManager
 from src.core.job_manager import JobManifest, write_json_atomic
 from src.core.production import ProductionPolicy, plan_shots
 from src.core.researcher import Dossier, Researcher
-from src.core.topic_picker import is_random_topic
+from src.core.news import NEWS_NICHE, NewsDesk
+from src.core.topic_picker import TopicPicker, is_random_topic
 from src.core.post_image import POST_SIZE, render_post
 
 ASPECT_SIZES = {"9:16": (1080, 1920), "1:1": (1080, 1080), "16:9": (1920, 1080)}
@@ -598,9 +599,19 @@ class ReelFactoryPipeline:
             language=language,
         )
 
+    def create_news_post(self, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
+        """Post de la página de noticias: la noticia colombiana más reciente sin publicar, contada solo con su artículo."""
+        topics = TopicPicker(history_path="output/news_history.json")
+        story, dossier = NewsDesk().pick(topics.used_topics(NEWS_NICHE))
+        print(f"📰 {story.outlet}: {story.title}")
+        package_path = self.create_post(story.title, NEWS_NICHE, dossier=dossier, progress_callback=progress_callback)
+        topics.remember(NEWS_NICHE, story.title, os.path.basename(os.path.dirname(package_path)))
+        return package_path
+
     def create_post(self, topic: str, niche: str = "curiosidades", research: Optional[bool] = None,
-                    progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
-        """Post de imagen: tema → texto (con investigación si toca) → imagen → titular encima.
+                    progress_callback: Optional[Callable[[int, str], None]] = None,
+                    dossier: Optional[Dossier] = None) -> str:
+        """Post de imagen: tema → texto (con investigación si toca, o con el dossier dado) → imagen → titular encima.
         Devuelve la ruta de su publicacion.json, que el publicador entiende igual que la de un reel."""
         def update_progress(percent: int, message: str):
             if progress_callback:
@@ -616,8 +627,7 @@ class ReelFactoryPipeline:
         work_dir = os.path.join("output", job_id)
         os.makedirs(work_dir, exist_ok=True)
 
-        dossier: Optional[Dossier] = None
-        if self.research_by_default(niche) if research is None else research:
+        if dossier is None and (self.research_by_default(niche) if research is None else research):
             update_progress(10, f"Investigando '{topic}'...")
             dossier = self.researcher.research(topic)
             dossier = dossier if dossier.facts else None
@@ -633,11 +643,14 @@ class ReelFactoryPipeline:
         styles = post_cfg.get("styles", {}) or {}
         style = styles.get(niche) or styles.get("default", "editorial")
         kicker = post["kicker"] or niche.replace("_", " ").upper()
+        handle = (post_cfg.get("handles", {}) or {}).get(niche, post_cfg.get("handle", ""))
         post_path = render_post(image.path, post["headline"], os.path.join(work_dir, "post.jpg"), style=style,
-                                highlight=post["highlight"], kicker=kicker, handle=post_cfg.get("handle", ""))
+                                highlight=post["highlight"], kicker=kicker, handle=handle)
         sources = dossier.source_list() if dossier else []
         if image.note and "Commons" in image.note:
             sources.append(f"Imagen: {image.note}")
+        if niche == NEWS_NICHE:
+            sources.append("Imagen ilustrativa: Pexels")
         package_path = os.path.join(work_dir, "publicacion.json")
         write_json_atomic(package_path, {
             "type": "post",
@@ -662,6 +675,14 @@ class ReelFactoryPipeline:
         Commons se descartó: devolvía fotos del sitio equivocado.)"""
         width, height = POST_SIZE
         exposure = self.exposure_target_for(niche)
+        if niche == NEWS_NICHE:
+            # Noticia real: nunca una imagen IA que pueda pasar por foto del suceso, solo foto de archivo ilustrativa.
+            for query in (post["pexels_query"], "Colombia city"):
+                photo = self.media.fetch_photo(query, os.path.join(work_dir, "foto.jpg"), width, height,
+                                               exposure_target=exposure) if query else None
+                if photo:
+                    return photo
+            raise RuntimeError("Pexels no devolvió ninguna foto para la noticia.")
         if dossier and dossier.main_url:
             lead = fetch_wikipedia_lead_image(self.media, dossier.main_url, os.path.join(work_dir, "archivo.jpg"),
                                               width, height, exposure)

@@ -126,10 +126,13 @@ publishing:
 # Posts de imagen: estilo del texto por nicho (editorial | cajas) y firma en cada imagen.
 posts:
   handle: "@sombra_de_evidencia"
+  handles:                        # firma propia por nicho (la página de noticias es otra página)
+    noticias: ""
   styles:
     default: "editorial"
     curiosidades: "editorial"
     misterio: "cajas"
+    noticias: "editorial"
 
 # Texto en pantalla que retiene: título-gancho (0-2.6 s), palabras clave grandes y barra de progreso.
 overlays:

@@ -33,7 +33,7 @@ class TopicPickerTests(unittest.TestCase):
     def test_every_current_niche_has_a_bank(self):
         import yaml
         with open("config/niches.yaml", encoding="utf-8") as file:
-            niches = list(yaml.safe_load(file))
+            niches = [n for n in yaml.safe_load(file) if n != "noticias"]   # sus temas salen de los RSS
         picker = TopicPicker(history_path=self.history)
         for niche in niches:
             with self.subTest(niche=niche):

@@ -29,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Fábrica de Reels Automatizados con IA")
     parser.add_argument("--cli", action="store_true", help="Generar un reel por consola")
     parser.add_argument("--post", action="store_true", help="Crear un post de imagen (titular sobre la imagen) por consola")
+    parser.add_argument("--news", action="store_true", help="Crear un post con la última noticia de Colombia para la página de noticias")
     parser.add_argument("--topic", type=str, default="El Secreto Mejor Guardado del Océano", help="Tema del Reel")
     parser.add_argument("--niche", type=str, default="curiosidades", help="Nicho del contenido")
     parser.add_argument("--duration", type=int, default=30, help="Duración objetivo en segundos (ej: 15, 30, 60)")
@@ -162,6 +163,21 @@ def main() -> int:
                 print(f"   ⚠️ [{warning['step']}] {warning['message']}")
             print(f"   📦 Publicación: {res.publication_package}")
         return publish_cli(pipeline, results[0].publication_package, args.publish_to)
+    if args.news:
+        from src.pipeline import ReelFactoryPipeline
+        # La página de noticias es otra página de Facebook: sus credenciales sustituyen a las de la
+        # principal, y sin ellas no se publica en ninguna (nunca una noticia en la página de misterio).
+        news_page = {"META_PAGE_ID": os.getenv("NEWS_PAGE_ID", ""), "META_PAGE_TOKEN": os.getenv("NEWS_PAGE_TOKEN", "")}
+        for key in ("META_PAGE_ID", "META_PAGE_TOKEN", "INSTAGRAM_USER_ID"):
+            os.environ.pop(key, None)
+        if all(news_page.values()):
+            os.environ.update(news_page)
+        else:
+            print("   ⚠️ Página de noticias sin conectar (NEWS_PAGE_ID y NEWS_PAGE_TOKEN): el post no se publicará.")
+        pipeline = ReelFactoryPipeline()
+        package_path = pipeline.create_news_post()
+        print(f"   📦 Publicación: {package_path}")
+        return publish_cli(pipeline, package_path, args.publish_to)
     if args.post:
         from src.pipeline import ReelFactoryPipeline
         print(f"🖼️ Post | Tema: {args.topic} | Nicho: {args.niche}")

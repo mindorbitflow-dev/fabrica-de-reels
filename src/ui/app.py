@@ -1406,6 +1406,11 @@ with tab4:
                 st.session_state.pop("meta_pages", None)
                 st.success("✅ Meta conectada." + ("" if chosen["instagram_id"] else " Esta página no tiene Instagram vinculado: solo se publicará en Facebook."))
                 st.rerun()
+            if st.button("📰 Usarla como página de noticias"):
+                save_env({"NEWS_PAGE_ID": chosen["id"], "NEWS_PAGE_TOKEN": chosen["token"]})
+                st.session_state.pop("meta_pages", None)
+                st.success(f"✅ {chosen['name']} será la página de noticias (`python run.py --news`).")
+                st.rerun()
 
     with st.expander("▶️ YouTube Shorts", expanded="youtube" not in connected_now):
         st.markdown(

@@ -8,7 +8,7 @@ on:
       kind:
         description: Qué crear
         type: choice
-        options: [reel, post]
+        options: [reel, post, noticia]
         default: reel
       niche:
         description: Nicho
@@ -24,7 +24,8 @@ permissions:
   contents: write   # guardar el historial de temas para no repetirlos
 
 concurrency:
-  group: fabrica
+  # Las noticias van aparte: GitHub deja un solo trabajo en espera por grupo y cancela el anterior.
+  group: ${{ inputs.kind == 'noticia' && 'noticias' || 'fabrica' }}
   cancel-in-progress: false
 
 jobs:
@@ -45,6 +46,8 @@ jobs:
       META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
       META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
       INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+      NEWS_PAGE_ID: ${{ secrets.NEWS_PAGE_ID }}
+      NEWS_PAGE_TOKEN: ${{ secrets.NEWS_PAGE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -70,7 +73,7 @@ jobs:
         run: |
           if [ -n "$YOUTUBE_TOKEN" ]; then printf '%s' "$YOUTUBE_TOKEN" > config/youtube_token.json; fi
           mkdir -p output
-          cp state/topic_history.json output/topic_history.json 2>/dev/null || true
+          cp state/*.json output/ 2>/dev/null || true
 
       - name: Fabricar y publicar
         env:
@@ -78,7 +81,9 @@ jobs:
           NICHE: ${{ inputs.niche }}
           PUBLISH_TO: ${{ inputs.publish_to }}
         run: |
-          if [ "$KIND" = post ]; then
+          if [ "$KIND" = noticia ]; then
+            python run.py --news --publish-to "$PUBLISH_TO"
+          elif [ "$KIND" = post ]; then
             python run.py --post --topic aleatorio --niche "$NICHE" --publish-to "$PUBLISH_TO"
           else
             python run.py --cli --topic aleatorio --niche "$NICHE" --platform reels --duration 45 --publish-to "$PUBLISH_TO"
@@ -87,12 +92,14 @@ jobs:
       - name: Guardar historial de temas
         if: always()
         run: |
-          [ -f output/topic_history.json ] || exit 0
-          cp output/topic_history.json state/topic_history.json
-          git diff --quiet state/topic_history.json && exit 0
+          for f in topic_history.json news_history.json; do
+            [ -f "output/$f" ] && cp "output/$f" "state/$f"
+          done
+          git add state/*.json
+          git diff --cached --quiet && exit 0
           git config user.name "fabrica-de-reels"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Historial de temas" state/topic_history.json
+          git commit -m "Historial de temas"
           git pull --rebase -q && git push -q
 
       - name: Guardar el video para revisarlo
