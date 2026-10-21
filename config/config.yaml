@@ -127,7 +127,7 @@ publishing:
 posts:
   handle: "@sombra_de_evidencia"
   handles:                        # firma propia por nicho (la página de noticias es otra página)
-    noticias: ""
+    noticias: "Infórmate Colombia"
   styles:
     default: "editorial"
     curiosidades: "editorial"
