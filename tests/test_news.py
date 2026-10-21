@@ -29,7 +29,7 @@ class NewsTests(unittest.TestCase):
 
     def test_article_body_comes_from_json_ld(self):
         html = ('<script type="application/ld+json">{"@type":"BreadcrumbList"}</script>'
-                '<script type="application/ld+json">[{"@type":"NewsArticle","articleBody":"Uno <b>dos</b>\\n tres"}]</script>')
+                '<script type="application/ld+json">[{"@type":"NewsArticle","articleBody":"Uno <b>dos</b>&nbsp;\\n tres"}]</script>')
         self.assertEqual(article_body(html), "Uno dos tres")
         self.assertEqual(article_body("<p>sin datos</p>"), "")
 
