@@ -1397,19 +1397,30 @@ with tab4:
                 st.error(f"❌ {e}")
         meta_pages = st.session_state.get("meta_pages", [])
         if meta_pages:
-            chosen = st.selectbox(
-                "Página a conectar", meta_pages,
-                format_func=lambda p: f"{p['name']} · Instagram: @{p['instagram_username']}" if p["instagram_id"] else f"{p['name']} · (sin Instagram vinculado)",
-            )
-            if st.button("🔗 Conectar esta página", type="primary"):
-                save_env({"META_PAGE_ID": chosen["id"], "META_PAGE_TOKEN": chosen["token"], "INSTAGRAM_USER_ID": chosen["instagram_id"]})
+            def page_label(p):
+                if p is None:
+                    return "— ninguna —"
+                return f"{p['name']} · Instagram: @{p['instagram_username']}" if p["instagram_id"] else f"{p['name']} · (sin Instagram vinculado)"
+
+            def current(key):
+                return next((i for i, p in enumerate(meta_pages) if p["id"] == os.getenv(key)), None)
+
+            main_page = st.selectbox("Página principal (reels y posts)", meta_pages, index=current("META_PAGE_ID") or 0,
+                                     format_func=page_label)
+            news_options = [None] + meta_pages
+            news_index = current("NEWS_PAGE_ID")
+            news_page = st.selectbox("Página de noticias (solo posts de noticias)", news_options,
+                                     index=0 if news_index is None else news_index + 1, format_func=page_label)
+            if news_page and news_page["id"] == main_page["id"]:
+                st.error("La página de noticias debe ser distinta de la principal.")
+            elif st.button("🔗 Conectar páginas", type="primary"):
+                save_env({"META_PAGE_ID": main_page["id"], "META_PAGE_TOKEN": main_page["token"],
+                          "INSTAGRAM_USER_ID": main_page["instagram_id"],
+                          "NEWS_PAGE_ID": news_page["id"] if news_page else "",
+                          "NEWS_PAGE_TOKEN": news_page["token"] if news_page else ""})
                 st.session_state.pop("meta_pages", None)
-                st.success("✅ Meta conectada." + ("" if chosen["instagram_id"] else " Esta página no tiene Instagram vinculado: solo se publicará en Facebook."))
-                st.rerun()
-            if st.button("📰 Usarla como página de noticias"):
-                save_env({"NEWS_PAGE_ID": chosen["id"], "NEWS_PAGE_TOKEN": chosen["token"]})
-                st.session_state.pop("meta_pages", None)
-                st.success(f"✅ {chosen['name']} será la página de noticias (`python run.py --news`).")
+                st.success("✅ Meta conectada." + ("" if main_page["instagram_id"] else " Esta página no tiene Instagram vinculado: solo se publicará en Facebook.")
+                           + (f" Noticias: {news_page['name']}." if news_page else ""))
                 st.rerun()
 
     with st.expander("▶️ YouTube Shorts", expanded="youtube" not in connected_now):
