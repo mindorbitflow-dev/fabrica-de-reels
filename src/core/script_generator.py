@@ -199,11 +199,12 @@ class ScriptGenerator:
             hashtags=_hashtags_from(keywords[:1] + ["Documental"] + ([topic] if len(topic) <= 24 else [])), source="dossier",
         )
 
-    def generate_post(self, topic: str, niche: str, research_brief: Optional[str] = None) -> Dict[str, Any]:
+    def generate_post(self, topic: str, niche: str, research_brief: Optional[str] = None,
+                      preferred: Optional[str] = None) -> Dict[str, Any]:
         """Texto de un post de imagen. Sin IA devuelve un post sobrio con source='offline'."""
         niche_data = self.niche_manager.get_niche(niche)
         prompt = build_post_prompt(topic, niche_data, research_brief)
-        for provider_name in self.llm.available_providers(self.preferred_provider):
+        for provider_name in self.llm.available_providers(preferred or self.preferred_provider):
             try:
                 data = self._repair_and_load_json(self.llm.complete(prompt, provider_name, max_tokens=1500, timeout=90)) or {}
             except Exception as error:

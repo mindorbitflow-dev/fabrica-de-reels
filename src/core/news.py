@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime
 import email.utils
+import html as html_lib
 import json
 import re
 import xml.etree.ElementTree as ET
@@ -76,7 +77,8 @@ def article_body(html: str) -> str:
             continue
         for node in data if isinstance(data, list) else data.get("@graph", [data]):
             if isinstance(node, dict) and node.get("articleBody"):
-                return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", str(node["articleBody"]))).strip()
+                text = html_lib.unescape(re.sub(r"<[^>]+>", " ", str(node["articleBody"])))
+                return re.sub(r"\s+", " ", text).strip()
     return ""
 
 

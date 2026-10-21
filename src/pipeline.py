@@ -633,7 +633,9 @@ class ReelFactoryPipeline:
             dossier = dossier if dossier.facts else None
 
         update_progress(30, "Escribiendo el post...")
-        post = self.script_gen.generate_post(topic, niche, dossier.brief() if dossier else None)
+        # Las noticias escriben con Groq primero: la cuota gratuita de Gemini queda para los reels y posts de la página principal.
+        post = self.script_gen.generate_post(topic, niche, dossier.brief() if dossier else None,
+                                             preferred="groq" if niche == NEWS_NICHE else None)
 
         update_progress(50, "Buscando una foto real del tema...")
         image = self._post_image(post, dossier, niche, work_dir)
