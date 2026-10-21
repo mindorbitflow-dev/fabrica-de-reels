@@ -13,7 +13,7 @@ import hashlib
 import threading
 import urllib.parse
 from dataclasses import dataclass
-from typing import Optional, Set
+from typing import Iterable, Optional, Set
 
 import requests
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageStat
@@ -35,6 +35,7 @@ class MediaResult:
     kind: str            # "image" | "video"
     is_fallback: bool = False
     note: str = ""
+    source_id: str = ""  # id de la foto en el banco (p. ej. "pexels:123"), para no repetirla
 
 
 class MediaEngine:
@@ -153,9 +154,11 @@ class MediaEngine:
 
     # ------------------------------------------------------------------ Fotos de stock
     def fetch_photo(self, query: str, out_path: str, width: int = 1080, height: int = 1920,
-                    exposure_target: Optional[int] = None, alt_must_match: Optional[re.Pattern] = None) -> Optional[MediaResult]:
+                    exposure_target: Optional[int] = None, alt_must_match: Optional[re.Pattern] = None,
+                    alt_must_not_match: Optional[re.Pattern] = None, exclude_ids: Iterable[str] = ()) -> Optional[MediaResult]:
         """Foto real de Pexels (misma clave que los videos). Respaldo antes del degradado.
-        Con alt_must_match solo vale una foto cuya descripción (alt) lo cumpla, p. ej. que sea de Colombia."""
+        Con alt_must_match solo vale una foto cuya descripción (alt) lo cumpla, p. ej. que sea de Colombia;
+        con alt_must_not_match se descarta la que lo cumpla. exclude_ids: fotos ya usadas ("pexels:<id>")."""
         if _valid_file(out_path, 5000):
             return MediaResult(out_path, "image")
         if not self.pexels_key or not query.strip():
@@ -164,13 +167,18 @@ class MediaEngine:
         try:
             res = requests.get("https://api.pexels.com/v1/search", headers={"Authorization": self.pexels_key},
                                params={"query": _stock_query(query), "orientation": orientation,
-                                       "per_page": 40 if alt_must_match else 10},
+                                       "per_page": 40 if alt_must_match or alt_must_not_match or exclude_ids else 10},
                                timeout=self.PEXELS_TIMEOUT)
             photos = res.json().get("photos", []) if res.status_code == 200 else []
         except (requests.RequestException, ValueError):
             return None
         for photo in photos:  # orden de relevancia del buscador
-            if alt_must_match and not alt_must_match.search(photo.get("alt") or ""):
+            alt = photo.get("alt") or ""
+            if alt_must_match and not alt_must_match.search(alt):
+                continue
+            if alt_must_not_match and alt_must_not_match.search(alt):
+                continue
+            if f"pexels:{photo.get('id')}" in exclude_ids:
                 continue
             src = photo.get("src") or {}
             url = src.get("large2x") or src.get("original")
@@ -179,7 +187,8 @@ class MediaEngine:
                 self._normalize_image(tmp, width, height,
                                       exposure_target=exposure_target or self.EXPOSURE_TARGET, save_to=out_path)
                 os.remove(tmp)
-                return MediaResult(out_path, "image", note=f"Foto de Pexels ({photo.get('photographer', '')})")
+                return MediaResult(out_path, "image", note=f"Foto de Pexels ({photo.get('photographer', '')})",
+                                   source_id=f"pexels:{photo.get('id')}")
         return None
 
     def fetch_pixabay_video(self, query: str, out_path: str, width: int = 1080, height: int = 1920,

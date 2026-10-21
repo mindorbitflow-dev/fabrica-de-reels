@@ -34,6 +34,13 @@ MAX_BODY_CHARS = 6000
 # Una foto de archivo solo ilustra una noticia de aquí si su descripción en Pexels la sitúa en Colombia.
 COLOMBIA_PHOTO = re.compile(r"\b(colombia\w*|bogot[aá]|medell[ií]n|cartagena|cali|barranquilla|santa marta|bucaramanga|"
                             r"manizales|pereira|guatap[eé]|villa de leyva|cocora|andes colombianos)\b", re.I)
+# Una foto temática (sin Colombia en la descripción) vale si no la sitúa en otro país: el Capitolio de Washington
+# no puede ilustrar el Congreso colombiano.
+FOREIGN_PHOTO = re.compile(r"\b(united states|usa|u\.s\.?|us capitol|american|america|washington|new york|california|texas|"
+                           r"florida|chicago|los angeles|canad\w*|mexic\w*|brazil\w*|brasil\w*|argentin\w*|peru\w*|chile\w*|"
+                           r"venezuel\w*|ecuador\w*|spain|spanish|madrid|barcelona|london|british|england|uk|france|french|paris|"
+                           r"ital\w*|rome|german\w*|berlin|europe\w*|russia\w*|ukrain\w*|china|chinese|japan\w*|india\w*|"
+                           r"israel\w*|africa\w*|australia\w*|white house|parliament|westminster|eiffel)\b", re.I)
 # Notas de servicio que se repiten a diario y no son noticia.
 ROUTINE = re.compile(r"pico y placa|lotería|loteria|chance|horóscopo|horoscopo|resultados? del|baloto|tasa de cambio|precio del dólar", re.I)
 

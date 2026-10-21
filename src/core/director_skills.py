@@ -160,4 +160,5 @@ Responde únicamente con JSON válido con las claves: title, headline, highlight
 
 CONTEXT_RULE = """
 - context: irá en la imagen, debajo del titular, para que quien solo vea la imagen entienda la noticia. De 22 a 38 palabras en 1 o 2 frases: qué pasó, quién, dónde o cuándo y por qué importa. Datos concretos del dossier, sin repetir el titular ni hacer preguntas.
-- En todo el post (headline, context y caption) respeta el grado de certeza del artículo: lo presunto, posible, denunciado o aún en discusión se dice así ("podría", "según", "denuncian", "estaría"); nunca lo presentes como un hecho ya ocurrido."""
+- En todo el post (headline, context y caption) respeta el grado de certeza del artículo: lo presunto, posible, denunciado o aún en discusión se dice así ("podría", "según", "denuncian", "estaría"); nunca lo presentes como un hecho ya ocurrido.
+- pexels_query: aquí es la foto de archivo que ilustra la noticia, así que describe una escena genérica y fotografiable del tema de ESTA noticia, sin lugares, edificios, instituciones ni personas con nombre (ej.: presupuesto → "budget documents calculator"; ataque a un batallón → "soldiers military patrol"; inundación → "flooded street rain")."""

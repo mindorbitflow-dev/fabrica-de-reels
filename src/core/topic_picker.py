@@ -72,12 +72,16 @@ class TopicPicker:
     def used_topics(self, niche: str) -> List[str]:
         return [entry["topic"] for entry in self._load_history().get(niche, []) if entry.get("topic")]
 
-    def remember(self, niche: str, topic: str, job_id: str = "") -> None:
+    def used_photos(self, niche: str) -> List[str]:
+        return [entry["photo"] for entry in self._load_history().get(niche, []) if entry.get("photo")]
+
+    def remember(self, niche: str, topic: str, job_id: str = "", photo: str = "") -> None:
         with _lock:
             history = self._load_history()
-            history.setdefault(niche, []).append({
-                "topic": topic, "job_id": job_id, "date": datetime.date.today().isoformat(),
-            })
+            entry = {"topic": topic, "job_id": job_id, "date": datetime.date.today().isoformat()}
+            if photo:
+                entry["photo"] = photo
+            history.setdefault(niche, []).append(entry)
             write_json_atomic(self.history_path, history)
 
     # ------------------------------------------------------------------ banco

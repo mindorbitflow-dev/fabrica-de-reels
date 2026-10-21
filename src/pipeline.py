@@ -18,7 +18,7 @@ import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict, field
 from shutil import which as shutil_which
-from typing import Dict, Any, Optional, Callable, List
+from typing import Dict, Any, Optional, Callable, Iterable, List, Set
 
 import yaml
 
@@ -40,7 +40,7 @@ from src.core.niche_manager import NicheManager
 from src.core.job_manager import JobManifest, write_json_atomic
 from src.core.production import ProductionPolicy, plan_shots
 from src.core.researcher import Dossier, Researcher
-from src.core.news import COLOMBIA_PHOTO, NEWS_NICHE, NewsDesk
+from src.core.news import COLOMBIA_PHOTO, FOREIGN_PHOTO, NEWS_NICHE, NewsDesk
 from src.core.topic_picker import TopicPicker, is_random_topic
 from src.core.post_image import POST_SIZE, render_post
 
@@ -604,13 +604,16 @@ class ReelFactoryPipeline:
         topics = TopicPicker(history_path="output/news_history.json")
         story, dossier = NewsDesk().pick(topics.used_topics(NEWS_NICHE))
         print(f"📰 {story.outlet}: {story.title}")
-        package_path = self.create_post(story.title, NEWS_NICHE, dossier=dossier, progress_callback=progress_callback)
-        topics.remember(NEWS_NICHE, story.title, os.path.basename(os.path.dirname(package_path)))
+        package_path = self.create_post(story.title, NEWS_NICHE, dossier=dossier, progress_callback=progress_callback,
+                                        used_photos=topics.used_photos(NEWS_NICHE))
+        with open(package_path, "r", encoding="utf-8") as file:
+            photo = json.load(file).get("image_id", "")
+        topics.remember(NEWS_NICHE, story.title, os.path.basename(os.path.dirname(package_path)), photo=photo)
         return package_path
 
     def create_post(self, topic: str, niche: str = "curiosidades", research: Optional[bool] = None,
                     progress_callback: Optional[Callable[[int, str], None]] = None,
-                    dossier: Optional[Dossier] = None) -> str:
+                    dossier: Optional[Dossier] = None, used_photos: Iterable[str] = ()) -> str:
         """Post de imagen: tema → texto (con investigación si toca, o con el dossier dado) → imagen → titular encima.
         Devuelve la ruta de su publicacion.json, que el publicador entiende igual que la de un reel."""
         def update_progress(percent: int, message: str):
@@ -638,7 +641,7 @@ class ReelFactoryPipeline:
                                              preferred="groq" if niche == NEWS_NICHE else None, context=niche == NEWS_NICHE)
 
         update_progress(50, "Buscando una foto real del tema...")
-        image = self._post_image(post, dossier, niche, work_dir)
+        image = self._post_image(post, dossier, niche, work_dir, set(used_photos))
 
         update_progress(85, "Componiendo el titular sobre la imagen...")
         post_cfg = self.config.get("posts", {}) or {}
@@ -657,6 +660,7 @@ class ReelFactoryPipeline:
         write_json_atomic(package_path, {
             "type": "post",
             "image": os.path.abspath(post_path),
+            "image_id": image.source_id,
             "title": post["title"],
             "headline": post["headline"],
             "caption": post["caption"],
@@ -671,18 +675,24 @@ class ReelFactoryPipeline:
         update_progress(100, "¡Post listo!" if not image.is_fallback else "Post listo, pero con imagen de respaldo.")
         return package_path
 
-    def _post_image(self, post: Dict[str, Any], dossier: Optional[Dossier], niche: str, work_dir: str):
+    def _post_image(self, post: Dict[str, Any], dossier: Optional[Dossier], niche: str, work_dir: str,
+                    used_photos: Set[str] = frozenset()):
         """De lo más real a lo menos: foto principal del artículo de Wikipedia sobre el tema,
         foto de Pexels y, solo si no hay ninguna, imagen IA de Pollinations. (Una búsqueda libre en
         Commons se descartó: devolvía fotos del sitio equivocado.)"""
         width, height = POST_SIZE
         exposure = self.exposure_target_for(niche)
         if niche == NEWS_NICHE:
-            # Noticia real: nunca una imagen IA que pueda pasar por foto del suceso, solo foto de archivo ilustrativa
-            # y de Colombia (sin filtrar, "congress Colombia" devolvía el Capitolio de Estados Unidos).
-            for query in (f"{post['pexels_query']} Colombia".strip(), "Bogotá Colombia"):
-                photo = self.media.fetch_photo(query, os.path.join(work_dir, "foto.jpg"), width, height,
-                                               exposure_target=exposure, alt_must_match=COLOMBIA_PHOTO)
+            # Noticia real: nunca una imagen IA que pueda pasar por foto del suceso, solo foto de archivo ilustrativa.
+            # De más a menos contexto: la escena del tema en Colombia, la escena del tema sin situarla en otro país
+            # (sin filtrar, "congress Colombia" devolvía el Capitolio de Estados Unidos) y, si no, una ciudad colombiana.
+            # Nunca una foto ya publicada: antes dos noticias seguidas caían en la misma vista de Bogotá.
+            scene = " ".join(post["pexels_query"].split()[:2])   # el buscador solo toma 3 palabras: deja sitio a "Colombia"
+            searches = [(f"{scene} Colombia", COLOMBIA_PHOTO, None), (post["pexels_query"], None, FOREIGN_PHOTO)] if scene else []
+            searches += [(city, COLOMBIA_PHOTO, None) for city in ("Bogotá Colombia", "Medellín Colombia", "Colombia city", "Cartagena Colombia")]
+            for query, must, must_not in searches:
+                photo = self.media.fetch_photo(query, os.path.join(work_dir, "foto.jpg"), width, height, exposure_target=exposure,
+                                               alt_must_match=must, alt_must_not_match=must_not, exclude_ids=used_photos)
                 if photo:
                     return photo
             raise RuntimeError("Pexels no devolvió ninguna foto para la noticia.")

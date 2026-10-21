@@ -1,9 +1,13 @@
 """Noticias (sin red): lectura del RSS, texto del artículo y elección de la noticia."""
 
 import datetime
+import os
+import tempfile
 import unittest
+from unittest import mock
 
-from src.core.news import COLOMBIA_PHOTO, Story, article_body, fresh_stories, parse_feed
+from src.core.media_engine import MediaEngine
+from src.core.news import COLOMBIA_PHOTO, FOREIGN_PHOTO, Story, article_body, fresh_stories, parse_feed
 
 UTC = datetime.timezone.utc
 NOW = datetime.datetime(2026, 10, 20, 18, 0, tzinfo=UTC)
@@ -51,6 +55,25 @@ class NewsTests(unittest.TestCase):
         self.assertTrue(COLOMBIA_PHOTO.search("A Colombian policewoman patrolling a square"))
         self.assertFalse(COLOMBIA_PHOTO.search("Senate desks with flags in California"))
         self.assertFalse(COLOMBIA_PHOTO.search("The US Capitol building in Washington"))
+
+    def test_thematic_photo_must_not_be_placed_abroad(self):
+        self.assertTrue(FOREIGN_PHOTO.search("The US Capitol building in Washington"))
+        self.assertTrue(FOREIGN_PHOTO.search("Soldiers marching in Mexico City"))
+        self.assertFalse(FOREIGN_PHOTO.search("Calculator and budget documents on a desk"))
+        self.assertFalse(FOREIGN_PHOTO.search("Soldiers on patrol in the jungle"))
+
+    def test_fetch_photo_skips_used_and_foreign_photos(self):
+        photos = [{"id": 1, "alt": "Budget documents", "src": {"large2x": "u1"}},
+                  {"id": 2, "alt": "Capitol in Washington", "src": {"large2x": "u2"}},
+                  {"id": 3, "alt": "Calculator on a desk", "src": {"large2x": "u3"}}]
+        response = mock.Mock(status_code=200, json=lambda: {"photos": photos})
+        engine = MediaEngine.__new__(MediaEngine)
+        downloaded = []
+        with tempfile.TemporaryDirectory() as folder,                 mock.patch.dict(os.environ, {"PEXELS_API_KEY": "k"}),                 mock.patch("src.core.media_engine.requests.get", return_value=response),                 mock.patch.object(MediaEngine, "_download", lambda self, url, tmp: downloaded.append(url) or open(tmp, "wb").close() or True),                 mock.patch.object(MediaEngine, "_normalize_image", lambda self, tmp, w, h, exposure_target, save_to: None):
+            result = engine.fetch_photo("budget documents", os.path.join(folder, "foto.jpg"), 1080, 1350,
+                                        alt_must_not_match=FOREIGN_PHOTO, exclude_ids={"pexels:1"})
+        self.assertEqual(downloaded, ["u3"])
+        self.assertEqual(result.source_id, "pexels:3")
 
 
 if __name__ == "__main__":
