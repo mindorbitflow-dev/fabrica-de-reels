@@ -129,8 +129,10 @@ No rellenes con suspense artificial, adjetivos ni repeticiones. Sé directo y es
 """
 
 
-def build_post_prompt(topic: str, niche_data: Dict[str, Any], research_brief: Optional[str] = None) -> str:
-    """Encargo de un post de imagen: titular sobre la imagen + texto completo en la descripción."""
+def build_post_prompt(topic: str, niche_data: Dict[str, Any], research_brief: Optional[str] = None,
+                      context: bool = False) -> str:
+    """Encargo de un post de imagen: titular sobre la imagen + texto completo en la descripción.
+    Con context=True pide además dos frases que irán en la imagen bajo el titular (noticias)."""
     research_block = ""
     if research_brief:
         research_block = f"""
@@ -148,9 +150,14 @@ REGLAS:
 - highlight: 1 o 2 palabras del headline, copiadas tal cual, que se resaltarán en amarillo: el dato o la idea clave (nunca artículos ni preposiciones).
 - kicker: etiqueta corta de sección, máximo 3 palabras (ej.: "CASO REAL · 1959", "NATURALEZA", "CEREBRO").
 - caption: de 50 a 140 palabras. Primera frase que amplía el titular; después contexto y el porqué; cierre con una pregunta honesta para comentar. Párrafos cortos separados por línea en blanco.
-- hashtags: 5 a 8, en español, cada uno con "#".
+- hashtags: 5 a 8, en español, cada uno con "#".{CONTEXT_RULE if context else ""}
 - image_prompt: en inglés, UNA imagen concreta del sujeto (sujeto, acción, entorno, luz), bien iluminada, sin texto. Estilo base: {niche_data.get("visual_style", "photorealistic, well lit")}.
 - pexels_query: en inglés, 2-3 palabras de una foto real del sujeto.
 
-Responde únicamente con JSON válido con las claves: title, headline, highlight, kicker, caption, hashtags, image_prompt, pexels_query.
+Responde únicamente con JSON válido con las claves: title, headline, highlight, kicker, caption, hashtags,{" context," if context else ""} image_prompt, pexels_query.
 """
+
+
+CONTEXT_RULE = """
+- context: irá en la imagen, debajo del titular, para que quien solo vea la imagen entienda la noticia. De 22 a 38 palabras en 1 o 2 frases: qué pasó, quién, dónde o cuándo y por qué importa. Datos concretos del dossier, sin repetir el titular ni hacer preguntas.
+- En todo el post (headline, context y caption) respeta el grado de certeza del artículo: lo presunto, posible, denunciado o aún en discusión se dice así ("podría", "según", "denuncian", "estaría"); nunca lo presentes como un hecho ya ocurrido."""

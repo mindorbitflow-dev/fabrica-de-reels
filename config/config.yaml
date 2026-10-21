@@ -132,7 +132,7 @@ posts:
     default: "editorial"
     curiosidades: "editorial"
     misterio: "cajas"
-    noticias: "editorial"
+    noticias: "noticia"
 
 # Texto en pantalla que retiene: título-gancho (0-2.6 s), palabras clave grandes y barra de progreso.
 overlays:

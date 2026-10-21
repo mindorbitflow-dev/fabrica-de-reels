@@ -200,10 +200,11 @@ class ScriptGenerator:
         )
 
     def generate_post(self, topic: str, niche: str, research_brief: Optional[str] = None,
-                      preferred: Optional[str] = None) -> Dict[str, Any]:
-        """Texto de un post de imagen. Sin IA devuelve un post sobrio con source='offline'."""
+                      preferred: Optional[str] = None, context: bool = False) -> Dict[str, Any]:
+        """Texto de un post de imagen. Sin IA devuelve un post sobrio con source='offline'.
+        Con context=True incluye "context": dos frases para la imagen bajo el titular."""
         niche_data = self.niche_manager.get_niche(niche)
-        prompt = build_post_prompt(topic, niche_data, research_brief)
+        prompt = build_post_prompt(topic, niche_data, research_brief, context)
         for provider_name in self.llm.available_providers(preferred or self.preferred_provider):
             try:
                 data = self._repair_and_load_json(self.llm.complete(prompt, provider_name, max_tokens=1500, timeout=90)) or {}
@@ -212,7 +213,8 @@ class ScriptGenerator:
                 continue
             headline = re.sub(r"\s+", " ", str(data.get("headline", ""))).strip()
             caption = str(data.get("caption", "")).strip()
-            if 3 <= count_words(headline) <= 12 and count_words(caption) >= 30:
+            context_text = re.sub(r"\s+", " ", str(data.get("context") or "")).strip()
+            if 3 <= count_words(headline) <= 12 and count_words(caption) >= 30 and (not context or 15 <= count_words(context_text) <= 45):
                 tags = [str(t).strip() for t in (data.get("hashtags") or []) if str(t).strip()]
                 return {
                     "title": str(data.get("title") or headline).strip(),
@@ -220,14 +222,16 @@ class ScriptGenerator:
                     "highlight": _as_list(data.get("highlight"))[:2],
                     "kicker": str(data.get("kicker") or "").strip()[:28],
                     "caption": caption,
+                    "context": context_text if context else "",
                     "hashtags": [t if t.startswith("#") else "#" + t for t in tags][:8],
                     "image_prompt": str(data.get("image_prompt") or f"photorealistic photograph of {topic}").strip(),
                     "pexels_query": str(data.get("pexels_query") or "").strip(),
                     "source": provider_name,
                 }
-            print(f"[ScriptGenerator] {provider_name}: post fuera de formato (titular {count_words(headline)} palabras, texto {count_words(caption)}).")
+            print(f"[ScriptGenerator] {provider_name}: post fuera de formato (titular {count_words(headline)} palabras, "
+                  f"texto {count_words(caption)}, contexto {count_words(context_text)}).")
         keywords = niche_data.get("keywords", [])
-        return {"title": topic, "headline": topic, "highlight": [], "kicker": "", "caption": topic, "hashtags": _hashtags_from(keywords),
+        return {"title": topic, "headline": topic, "highlight": [], "kicker": "", "caption": topic, "context": "", "hashtags": _hashtags_from(keywords),
                 "image_prompt": f"photorealistic documentary photograph of {topic}, well lit", "pexels_query": topic,
                 "source": "offline"}
 

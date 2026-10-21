@@ -40,7 +40,7 @@ from src.core.niche_manager import NicheManager
 from src.core.job_manager import JobManifest, write_json_atomic
 from src.core.production import ProductionPolicy, plan_shots
 from src.core.researcher import Dossier, Researcher
-from src.core.news import NEWS_NICHE, NewsDesk
+from src.core.news import COLOMBIA_PHOTO, NEWS_NICHE, NewsDesk
 from src.core.topic_picker import TopicPicker, is_random_topic
 from src.core.post_image import POST_SIZE, render_post
 
@@ -635,7 +635,7 @@ class ReelFactoryPipeline:
         update_progress(30, "Escribiendo el post...")
         # Las noticias escriben con Groq primero: la cuota gratuita de Gemini queda para los reels y posts de la página principal.
         post = self.script_gen.generate_post(topic, niche, dossier.brief() if dossier else None,
-                                             preferred="groq" if niche == NEWS_NICHE else None)
+                                             preferred="groq" if niche == NEWS_NICHE else None, context=niche == NEWS_NICHE)
 
         update_progress(50, "Buscando una foto real del tema...")
         image = self._post_image(post, dossier, niche, work_dir)
@@ -647,7 +647,7 @@ class ReelFactoryPipeline:
         kicker = post["kicker"] or niche.replace("_", " ").upper()
         handle = (post_cfg.get("handles", {}) or {}).get(niche, post_cfg.get("handle", ""))
         post_path = render_post(image.path, post["headline"], os.path.join(work_dir, "post.jpg"), style=style,
-                                highlight=post["highlight"], kicker=kicker, handle=handle)
+                                highlight=post["highlight"], kicker=kicker, handle=handle, context=post["context"])
         sources = dossier.source_list() if dossier else []
         if image.note and "Commons" in image.note:
             sources.append(f"Imagen: {image.note}")
@@ -678,10 +678,11 @@ class ReelFactoryPipeline:
         width, height = POST_SIZE
         exposure = self.exposure_target_for(niche)
         if niche == NEWS_NICHE:
-            # Noticia real: nunca una imagen IA que pueda pasar por foto del suceso, solo foto de archivo ilustrativa.
-            for query in (post["pexels_query"], "Colombia city"):
+            # Noticia real: nunca una imagen IA que pueda pasar por foto del suceso, solo foto de archivo ilustrativa
+            # y de Colombia (sin filtrar, "congress Colombia" devolvía el Capitolio de Estados Unidos).
+            for query in (f"{post['pexels_query']} Colombia".strip(), "Bogotá Colombia"):
                 photo = self.media.fetch_photo(query, os.path.join(work_dir, "foto.jpg"), width, height,
-                                               exposure_target=exposure) if query else None
+                                               exposure_target=exposure, alt_must_match=COLOMBIA_PHOTO)
                 if photo:
                     return photo
             raise RuntimeError("Pexels no devolvió ninguna foto para la noticia.")

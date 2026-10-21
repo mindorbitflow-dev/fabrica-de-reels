@@ -31,6 +31,9 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; NoticiasColombia/1.0)"}
 MAX_AGE_HOURS = 12
 MIN_BODY_WORDS = 120
 MAX_BODY_CHARS = 6000
+# Una foto de archivo solo ilustra una noticia de aquí si su descripción en Pexels la sitúa en Colombia.
+COLOMBIA_PHOTO = re.compile(r"\b(colombia\w*|bogot[aá]|medell[ií]n|cartagena|cali|barranquilla|santa marta|bucaramanga|"
+                            r"manizales|pereira|guatap[eé]|villa de leyva|cocora|andes colombianos)\b", re.I)
 # Notas de servicio que se repiten a diario y no son noticia.
 ROUTINE = re.compile(r"pico y placa|lotería|loteria|chance|horóscopo|horoscopo|resultados? del|baloto|tasa de cambio|precio del dólar", re.I)
 

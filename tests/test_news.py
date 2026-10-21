@@ -3,7 +3,7 @@
 import datetime
 import unittest
 
-from src.core.news import Story, article_body, fresh_stories, parse_feed
+from src.core.news import COLOMBIA_PHOTO, Story, article_body, fresh_stories, parse_feed
 
 UTC = datetime.timezone.utc
 NOW = datetime.datetime(2026, 10, 20, 18, 0, tzinfo=UTC)
@@ -45,6 +45,12 @@ class NewsTests(unittest.TestCase):
         fresh = fresh_stories(stories, ["Inundaciones en Riohacha: 300 familias afectadas"], NOW)
         self.assertEqual([s.title for s in fresh],
                          ["Congreso aprueba el presupuesto de 2027", "Gobierno anuncia nuevo metro para Medellín"])
+
+    def test_photo_must_be_described_as_colombian(self):
+        self.assertTrue(COLOMBIA_PHOTO.search("Historic architecture of the National Capitol in Bogotá"))
+        self.assertTrue(COLOMBIA_PHOTO.search("A Colombian policewoman patrolling a square"))
+        self.assertFalse(COLOMBIA_PHOTO.search("Senate desks with flags in California"))
+        self.assertFalse(COLOMBIA_PHOTO.search("The US Capitol building in Washington"))
 
 
 if __name__ == "__main__":

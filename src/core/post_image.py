@@ -1,8 +1,9 @@
 """Composición del post de imagen: titular sobre la foto, con etiqueta de sección y firma.
 
-Dos estilos (el nicho elige cuál en config.yaml → posts.styles):
+Tres estilos (el nicho elige cuál en config.yaml → posts.styles):
 - editorial: frase en minúsculas, palabras clave en amarillo, etiqueta arriba y firma abajo.
 - cajas: mayúsculas sobre cajas negras y las palabras clave sobre caja amarilla.
+- noticia: como editorial, con dos frases de contexto bajo el titular para entender la noticia sin abrir el texto.
 """
 
 import os
@@ -67,7 +68,7 @@ def _pill(draw, x: float, y: float, text: str, fill, color) -> None:
     draw.text((x + 20, y + 26), text, font=font, fill=color, anchor="lm")
 
 
-def _editorial(image, draw, headline, highlight, kicker, handle) -> None:
+def _editorial(image, draw, headline, highlight, kicker, handle, context="") -> None:
     width, height = image.size
     _shade(image, 0.38, 235)
     if kicker:
@@ -86,7 +87,7 @@ def _editorial(image, draw, headline, highlight, kicker, handle) -> None:
         draw.text((MARGIN + 84, height - 105), handle, font=_font("SemiBold", 28), fill=(225, 225, 225), anchor="lm")
 
 
-def _cajas(image, draw, headline, highlight, kicker, handle) -> None:
+def _cajas(image, draw, headline, highlight, kicker, handle, context="") -> None:
     width, height = image.size
     _shade(image, 0.55, 150)
     pad, gap = 14, 10   # relleno de cada caja y separación entre cajas
@@ -110,11 +111,41 @@ def _cajas(image, draw, headline, highlight, kicker, handle) -> None:
         draw.text((width / 2, height - 80), handle, font=_font("SemiBold", 28), fill="white", anchor="mm")
 
 
-STYLES = {"editorial": _editorial, "cajas": _cajas}
+def _noticia(image, draw, headline, highlight, kicker, handle, context="") -> None:
+    width, height = image.size
+    _shade(image, 0.22, 245)
+    if kicker:
+        _pill(draw, MARGIN, MARGIN, kicker.upper(), ACCENT, "black")
+    max_width = width - 2 * MARGIN
+    body_font = _font("SemiBold", 34)
+    body = [" ".join(t for t, _, _ in line)
+            for line in _wrap(draw, context, (), body_font, max_width, draw.textlength(" ", font=body_font), False)][:6]
+    body_step, rule_gap = 46, 34   # interlineado del contexto y espacio de la raya que lo separa del titular
+    font, size, lines = _fit(draw, headline, highlight, "ExtraBold", range(76, 47, -4), 3, 0.28, False, max_width)
+    line_height = int(size * 1.1)
+    y = height - 140 - body_step * len(body) - (2 * rule_gap if body else 0) - line_height * len(lines)
+    for line in lines:
+        x = MARGIN
+        for text, marked, w in line:
+            draw.text((x, y), text, font=font, fill=ACCENT if marked else "white")
+            x += w + size * 0.28
+        y += line_height
+    if body:
+        y += rule_gap - 8
+        draw.rectangle((MARGIN, y, MARGIN + 64, y + 6), fill=ACCENT)
+        y += rule_gap
+        for line in body:
+            draw.text((MARGIN, y), line, font=body_font, fill=(235, 235, 235))
+            y += body_step
+    if handle:
+        draw.text((MARGIN, height - 82), handle, font=_font("SemiBold", 28), fill=(200, 200, 200), anchor="lm")
+
+
+STYLES = {"editorial": _editorial, "cajas": _cajas, "noticia": _noticia}
 
 
 def render_post(image_path: str, headline: str, out_path: str, style: str = "editorial",
-                highlight: Iterable[str] = (), kicker: str = "", handle: str = "") -> str:
+                highlight: Iterable[str] = (), kicker: str = "", handle: str = "", context: str = "") -> str:
     """Recorta la foto a 4:5 y compone el titular con el estilo pedido. Guarda JPEG (Instagram no acepta otro)."""
     width, height = POST_SIZE
     base = Image.open(image_path).convert("RGB")
@@ -122,7 +153,7 @@ def render_post(image_path: str, headline: str, out_path: str, style: str = "edi
     base = base.resize((round(base.width * scale), round(base.height * scale)), Image.LANCZOS)
     left, top = (base.width - width) // 2, (base.height - height) // 2
     base = base.crop((left, top, left + width, top + height))
-    STYLES.get(style, _editorial)(base, ImageDraw.Draw(base), headline, list(highlight), kicker, handle)
+    STYLES.get(style, _editorial)(base, ImageDraw.Draw(base), headline, list(highlight), kicker, handle, context)
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     base.save(out_path, "JPEG", quality=92)
     return out_path

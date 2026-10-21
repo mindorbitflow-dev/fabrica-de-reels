@@ -153,8 +153,9 @@ class MediaEngine:
 
     # ------------------------------------------------------------------ Fotos de stock
     def fetch_photo(self, query: str, out_path: str, width: int = 1080, height: int = 1920,
-                    exposure_target: Optional[int] = None) -> Optional[MediaResult]:
-        """Foto real de Pexels (misma clave que los videos). Respaldo antes del degradado."""
+                    exposure_target: Optional[int] = None, alt_must_match: Optional[re.Pattern] = None) -> Optional[MediaResult]:
+        """Foto real de Pexels (misma clave que los videos). Respaldo antes del degradado.
+        Con alt_must_match solo vale una foto cuya descripción (alt) lo cumpla, p. ej. que sea de Colombia."""
         if _valid_file(out_path, 5000):
             return MediaResult(out_path, "image")
         if not self.pexels_key or not query.strip():
@@ -162,12 +163,15 @@ class MediaEngine:
         orientation = "portrait" if width < height else ("landscape" if width > height else "square")
         try:
             res = requests.get("https://api.pexels.com/v1/search", headers={"Authorization": self.pexels_key},
-                               params={"query": _stock_query(query), "orientation": orientation, "per_page": 10},
+                               params={"query": _stock_query(query), "orientation": orientation,
+                                       "per_page": 40 if alt_must_match else 10},
                                timeout=self.PEXELS_TIMEOUT)
             photos = res.json().get("photos", []) if res.status_code == 200 else []
         except (requests.RequestException, ValueError):
             return None
         for photo in photos:  # orden de relevancia del buscador
+            if alt_must_match and not alt_must_match.search(photo.get("alt") or ""):
+                continue
             src = photo.get("src") or {}
             url = src.get("large2x") or src.get("original")
             tmp = out_path + ".part.jpg"
